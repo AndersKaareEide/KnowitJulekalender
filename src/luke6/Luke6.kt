@@ -8,25 +8,26 @@ val oslo = Capital("Oslo", 59.911491, 10.757933)
 
 fun main(args: Array<String>) {
     val reader = FileReader(File("src/luke6/verda.txt"))
-    val maxTotalDistance = 7_274 * 24
 
     val capitalsByDistance = reader.readLines()
             .map { it.split("\t") }
-            .toSet().toList()
             .filter { it[6] == "Hovedstad" }
+            .toSet().toList()
             .map { Capital(it[2], it[12].toDouble(), it[13].toDouble()) }
             .map { getDistanceToOslo(it) * 2 } //Double distance since we fly back and forth
             .sorted()
-            .iterator()
 
-    var distanceSoFar = 0.0
+    var maxDistance = 7_274.0 * 24
     var numVisited = 0
-    while (distanceSoFar <= maxTotalDistance) {
-        distanceSoFar += capitalsByDistance.next()
+
+    for ((index, capital) in capitalsByDistance.withIndex()) {
+        if (maxDistance - capitalsByDistance[index] < 0)
+            break
+        maxDistance -= capitalsByDistance[index]
         numVisited++
     }
 
-    println("Number of visited capitals: $numVisited - 1")
+    println("Number of visited capitals: $numVisited")
 }
 
 data class Capital(val name: String, val lat: Double, val long: Double)
