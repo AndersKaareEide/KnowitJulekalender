@@ -1,37 +1,42 @@
 package luke8
 
-import java.util.HashMap
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.runBlocking
+import java.lang.Long.min
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
     println("Kjøretid : " + measureTimeMillis {
-        println("Summen er ${sumJuleTall(10_000_000)}")
-    })
+        println("Summen er ${sumJuleTall(10_000_000, 100_000)}")
+    } + "ms")
 }
 
-val squares = (0 .. 9).associate { it to it * it}
-
-
-fun sumJuleTall(n: Int): Long {
-    var sum: Long = 0
-
-    val blackList = mutableSetOf(20, 42, 145, 89, 85, 58, 29, 37, 25, 50, 61, 65, 17, 16, 40, 34, 100, 53, 26)
-
-    
-    for (num in 1 .. n) {
-        var temp = num
-        val tempBlackList = mutableListOf<Int>()
-        while ((temp == 1 || temp > 9) && temp !in blackList && temp !in tempBlackList) {
-            tempBlackList.add(temp)
-            temp = sumDigits(temp)
-            if (temp == 1) {
-                sum += num
-                break
+fun sumJuleTall(input: Long, blockSize: Int): Long {
+    val jobs = (1 .. input).step(blockSize.toLong()).map {
+        async {
+            var tempSum: Long = 0
+            for (n in it until min(it + blockSize, input + 1)) {
+                if (isJuletall(n.toInt())) {
+                    tempSum += n
+                }
             }
+            tempSum
         }
     }
+    return runBlocking {
+        jobs.map { it.await() }.sum()
+    }
+}
 
-    return sum
+fun isJuletall(num: Int): Boolean {
+    var temp = num
+    while (temp != 89) {
+        temp = sumDigits(temp)
+        if (temp == 1) {
+            return true
+        }
+    }
+    return false
 }
 
 fun sumDigits(n: Int): Int {
@@ -39,9 +44,8 @@ fun sumDigits(n: Int): Int {
     var sum = 0
     while (temp > 0){
         val i = temp % 10
-        sum += i * i
+        sum += squares[i]
         temp /= 10
     }
     return sum
 }
-
