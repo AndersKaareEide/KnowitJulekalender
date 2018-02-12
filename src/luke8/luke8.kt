@@ -1,13 +1,27 @@
+@file:Suppress("LoopToCallChain")
+
 package luke8
 
 import kotlinx.coroutines.experimental.async
+
 import kotlinx.coroutines.experimental.runBlocking
 import java.lang.Long.min
 import kotlin.system.measureTimeMillis
 
+lateinit var squares: Array<Int>
+lateinit var juletallTable: BooleanArray
+
 fun main(args: Array<String>) {
     println("Kjøretid : " + measureTimeMillis {
-        println("Summen er ${sumJuleTall(10_000_000, 100_000)}")
+        squares = (0 .. 9)
+                .map { it * it }
+                .toTypedArray()
+
+        juletallTable = (0 .. (9 * 9 * 10))
+                .map { it != 0 && isJuletall(it) }
+                .toBooleanArray()
+
+        println("Summen er ${sumJuleTall(10_000_000, 1_250_000)}")
     } + "ms")
 }
 
@@ -16,7 +30,7 @@ fun sumJuleTall(input: Long, blockSize: Int): Long {
         async {
             var tempSum: Long = 0
             for (n in it until min(it + blockSize, input + 1)) {
-                if (isJuletall(n.toInt())) {
+                if (juletallTable[sumDigits(n.toInt())]) {
                     tempSum += n
                 }
             }
