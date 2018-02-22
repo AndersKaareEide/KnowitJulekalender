@@ -22,31 +22,3 @@ fun main(args: Array<String>) {
 
     println("Kjøretid: ${time}ms, sum: $sum")
 }
-
-fun oldShit(maxNum: Int): List<Pair<Int, Int>> {
-    return (1..maxNum).map { tall ->
-        var numSequences = 0
-        for (num in 1..tall / 2) {
-            var sequenceSum = num
-            var n = 1
-            while (sequenceSum <= tall) {
-                sequenceSum += num + n
-                n++
-                if (sequenceSum == tall)
-                    numSequences++
-            }
-        }
-        Pair(tall, numSequences)
-    }
-}
-
-//1,2,3,4,5,6
-//2,3,4
-//3,4,5
-//2,3
-//2,3,4
-//1,2,3,4
-//3,4
-
-
-//Alle oddetall kan summeres sammen som n/2 + (n/2 + 1)
