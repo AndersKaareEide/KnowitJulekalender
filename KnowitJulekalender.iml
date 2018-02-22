@@ -33,5 +33,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="kotlinx-coroutines-core-0.22.2" level="project" />
+    <orderEntry type="library" name="org.apache.commons:commons-math3:3.6.1" level="project" />
   </component>
 </module>
